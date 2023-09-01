@@ -60,6 +60,9 @@ sysinfo.txt
 *.aab
 *.unitypackage
 *.app
+*.exe
+*.dll
+"My 3D Project"/Library/*.*
 
 # Crashlytics generated file
 crashlytics-build.properties

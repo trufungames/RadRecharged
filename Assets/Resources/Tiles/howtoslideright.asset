@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13b75c95f34a00d4e8c04f76b73312e6, type: 3}
+  m_Name: howtoslideright
+  m_EditorClassIdentifier: 
+  m_AnimatedSprites:
+  - {fileID: -1604493571, guid: 7c72b3f9292e722418a81f6d94ee245c, type: 3}
+  - {fileID: -1976516108, guid: 7c72b3f9292e722418a81f6d94ee245c, type: 3}
+  - {fileID: -873375501, guid: 7c72b3f9292e722418a81f6d94ee245c, type: 3}
+  - {fileID: 1031458368, guid: 7c72b3f9292e722418a81f6d94ee245c, type: 3}
+  m_MinSpeed: 3
+  m_MaxSpeed: 3
+  m_AnimationStartTime: 0
+  m_AnimationStartFrame: 0
+  m_TileColliderType: 0
+  m_TileAnimationFlags: 0

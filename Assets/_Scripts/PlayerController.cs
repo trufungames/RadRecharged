@@ -17,6 +17,8 @@ public class PlayerController : MonoBehaviour
     bool isGrounded;
     bool isShooting;
     bool isFacingRight;
+    float shootTime;
+    bool keyShootRelease;
 
     // Start is called before the first frame update
     void Start()
@@ -58,23 +60,85 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        PlayerDirectionInput();
+        PlayerShootInput();
+        PlayerMovement();
+    }
+
+    void PlayerDirectionInput()
+    {
         keyHorizontal = Input.GetAxisRaw("Horizontal");
         keyJump = Input.GetKeyDown(KeyCode.V);
         keyShoot = Input.GetKey(KeyCode.G);
+    }
 
+    void PlayerShootInput()
+    {
+        float shootTimeLength = 0f;
+        float keyShootReleaseTimeLength = 0f;
+
+        if (keyShoot && keyShootRelease)
+        {
+            isShooting = true;
+            keyShootRelease = false;
+            shootTime = Time.time;
+            Debug.Log("Shoot Bullet.");
+            //TODO shoot the bullet
+        }
+        if (!keyShoot && !keyShootRelease)
+        {
+            keyShootReleaseTimeLength = Time.time - shootTime;
+            keyShootRelease = true;
+        }
+        if (isShooting)
+        {
+            shootTimeLength = Time.time - shootTime;
+            if (shootTimeLength >= 0.25f || keyShootReleaseTimeLength >= 0.15f)
+            {
+                isShooting = false;
+            }
+        }
+    }
+
+    void PlayerMovement()
+    {
         if (keyHorizontal < 0)
         {
+            if (isFacingRight)
+            {
+                Flip();
+            }
+
             if (isGrounded)
             {
-                animator.Play("Player_Run");
-            }            
+                if (isShooting)
+                {
+                    animator.Play("Player_RunShoot");
+                }
+                else
+                {
+                    animator.Play("Player_Run");
+                }
+            }
             rb2d.velocity = new Vector2(-moveSpeed, rb2d.velocity.y);
         }
         else if (keyHorizontal > 0)
         {
+            if (!isFacingRight)
+            {
+                Flip();
+            }
+
             if (isGrounded)
             {
-                animator.Play("Player_Run");
+                if (isShooting)
+                {
+                    animator.Play("Player_RunShoot");
+                }
+                else
+                {
+                    animator.Play("Player_Run");
+                }
             }
             rb2d.velocity = new Vector2(moveSpeed, rb2d.velocity.y);
         }
@@ -82,20 +146,48 @@ public class PlayerController : MonoBehaviour
         {
             if (isGrounded)
             {
-                animator.Play("Player_Idle");
+                if (isShooting)
+                {
+                    animator.Play("Player_Shoot");
+                }
+                else
+                {
+                    animator.Play("Player_Idle");
+                }
             }
             rb2d.velocity = new Vector2(0f, rb2d.velocity.y);
         }
 
         if (keyJump && isGrounded)
         {
-            animator.Play("Player_Jump");
+            if (isShooting)
+            {
+                animator.Play("Player_JumpShoot");
+            }
+            else
+            {
+                animator.Play("Player_Jump");
+            }
+
             rb2d.velocity = new Vector2(rb2d.velocity.x, jumpSpeed);
         }
 
         if (!isGrounded)
         {
-            animator.Play("Player_Jump");
+            if (isShooting)
+            {
+                animator.Play("Player_JumpShoot");
+            }
+            else
+            {
+                animator.Play("Player_Jump");
+            }
         }
+    }
+    
+    void Flip()
+    {
+        isFacingRight = !isFacingRight;
+        transform.Rotate(0f, 180f, 0f);
     }
 }

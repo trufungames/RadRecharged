@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController: MonoBehaviour
 {
     Animator animator;
     BoxCollider2D box2d;
@@ -14,9 +14,14 @@ public class PlayerController : MonoBehaviour
     bool keyShoot;
     bool isGrounded;
     bool isShooting;
+    bool isTakingDamage;
+    bool isInvincible;
     bool isFacingRight;
     float shootTime;
     bool keyShootRelease;
+    bool hitSideRight;
+    public int currentHealth;
+    public int maxHealth = 28;
 
     [SerializeField] float moveSpeed = 6.5f;
     [SerializeField] float jumpSpeed = 7f;
@@ -33,6 +38,7 @@ public class PlayerController : MonoBehaviour
         box2d = GetComponent<BoxCollider2D>();
         rb2d = GetComponent<Rigidbody2D>();
         isFacingRight = true;
+        currentHealth = maxHealth;
     }
 
     private void FixedUpdate()
@@ -66,6 +72,12 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (isTakingDamage)
+        {
+            animator.Play("Player_Hit");
+            return;
+        }
+
         PlayerDirectionInput();
         PlayerJumpInput();
         PlayerShootInput();
@@ -210,5 +222,62 @@ public class PlayerController : MonoBehaviour
         bullet.GetComponent<BulletScript>().SetBulletSpeed(bulletSpeed);
         bullet.GetComponent<BulletScript>().SetBulletDirection(isFacingRight ? Vector2.right : Vector2.left);
         bullet.GetComponent<BulletScript>().Shoot();
+    }
+
+    public void HitSide(bool rightSide)
+    {
+        hitSideRight = rightSide;
+    }
+
+    public void Invincible(bool invincibility)
+    {
+        isInvincible = invincibility;
+    }
+
+    public void TakeDamage(int damage)
+    {
+        if (!isInvincible)
+        {
+            currentHealth -= damage;
+            Mathf.Clamp(currentHealth, 0, maxHealth);
+
+            if (currentHealth <= 0)
+            {
+                Defeat();
+            }
+            else
+            {
+                StartDamageAnimation();
+            }
+        }
+    }
+
+    void StartDamageAnimation()
+    {
+        if (!isTakingDamage)
+        {
+            isTakingDamage = true;
+            isInvincible = true;
+            float hitForceX = 0.5f;
+            float hitForceY = 1.5f;
+            if (hitSideRight)
+            {
+                hitForceX *= -1;
+            }
+            rb2d.velocity = Vector2.zero;
+            rb2d.AddForce(new Vector2(hitForceX, hitForceY), ForceMode2D.Impulse);
+        }
+    }
+
+    void StopDamageAnimation()
+    {
+        isTakingDamage = false;
+        isInvincible = false;
+        animator.Play("Player_Hit", -1, 0f);
+    }
+
+    void Defeat()
+    {
+        Destroy(gameObject);
     }
 }

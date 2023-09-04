@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -8,6 +9,7 @@ public class PlayerController: MonoBehaviour
     Animator animator;
     BoxCollider2D box2d;
     Rigidbody2D rb2d;
+    SpriteRenderer sprite;
     
     float keyHorizontal;
     bool keyJump;
@@ -22,6 +24,8 @@ public class PlayerController: MonoBehaviour
     bool hitSideRight;
     public int currentHealth;
     public int maxHealth = 28;
+    float blinkTime = 0;
+    float blinkTimeTotal = 0.1f;
 
     [SerializeField] float moveSpeed = 6.5f;
     [SerializeField] float jumpSpeed = 7f;
@@ -37,6 +41,7 @@ public class PlayerController: MonoBehaviour
         animator = GetComponent<Animator>();
         box2d = GetComponent<BoxCollider2D>();
         rb2d = GetComponent<Rigidbody2D>();
+        sprite = GetComponent<SpriteRenderer>();
         isFacingRight = true;
         currentHealth = maxHealth;
     }
@@ -72,9 +77,28 @@ public class PlayerController: MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (isInvincible)
+        {
+            blinkTime += Time.deltaTime;
+
+            if (blinkTime >= blinkTimeTotal)
+            {
+                blinkTime = 0;
+                sprite.enabled = !sprite.enabled;
+            }
+        }
+
         if (isTakingDamage)
         {
-            animator.Play("Player_Hit");
+            if (isGrounded)
+            {
+                animator.Play("Player_Hit");
+            }
+            else
+            {
+                animator.Play("Player_Hit_Air");
+            }
+            
             return;
         }
 
@@ -248,18 +272,20 @@ public class PlayerController: MonoBehaviour
             else
             {
                 StartDamageAnimation();
+                Invoke("StopDamageAnimation", 0.5f);
+                Invoke("StopInvincibility", 1.5f);
             }
         }
     }
 
     void StartDamageAnimation()
     {
-        if (!isTakingDamage)
+        if (!isInvincible)
         {
             isTakingDamage = true;
             isInvincible = true;
-            float hitForceX = 0.5f;
-            float hitForceY = 1.5f;
+            float hitForceX = 1.5f;
+            float hitForceY = 2.5f;
             if (hitSideRight)
             {
                 hitForceX *= -1;
@@ -272,8 +298,13 @@ public class PlayerController: MonoBehaviour
     void StopDamageAnimation()
     {
         isTakingDamage = false;
+        animator.Play("Player_Idle", -1, 0f);
+    }
+
+    void StopInvincibility()
+    {
         isInvincible = false;
-        animator.Play("Player_Hit", -1, 0f);
+        sprite.enabled = true;
     }
 
     void Defeat()

@@ -17,8 +17,8 @@ public class BulletScript : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
-        rb2d= GetComponent<Rigidbody2D>();
-        sprite= GetComponent<SpriteRenderer>();
+        rb2d = GetComponent<Rigidbody2D>();
+        sprite = GetComponent<SpriteRenderer>();
     }
 
     // Update is called once per frame

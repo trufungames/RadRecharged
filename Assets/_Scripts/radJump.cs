@@ -10,7 +10,7 @@ public class radJump : MonoBehaviour
     [HideInInspector] public Rigidbody2D body;
     private radGround ground;
     [HideInInspector] public Vector2 velocity;
-    //private characterJuice juice;
+    private radJuice juice;
 
 
     [Header("Jumping Stats")]
@@ -47,7 +47,7 @@ public class radJump : MonoBehaviour
 
         body = GetComponent<Rigidbody2D>();
         ground = GetComponent<radGround>();
-        //juice = GetComponentInChildren<characterJuice>();
+        juice = GetComponentInChildren<radJuice>();
         defaultGravityScale = 1f;
     }
 
@@ -231,11 +231,11 @@ public class radJump : MonoBehaviour
             velocity.y += jumpSpeed;
             currentlyJumping = true;
 
-            //if (juice != null)
-            //{
-            //    //Apply the jumping effects on the juice script
-            //    juice.jumpEffects();
-            //}
+            if (juice != null)
+            {
+                //Apply the jumping effects on the juice script
+                juice.jumpEffects();
+            }
         }
 
         if (jumpBuffer == 0)

@@ -53,8 +53,13 @@ public class radJuice : MonoBehaviour
         //We need to change the character's running animation to suit their current speed
         runningSpeed = Mathf.Clamp(Mathf.Abs(moveScript.velocity.x), 0, maxSpeed);
         myAnimator.SetFloat("runSpeed", runningSpeed);
-        jumpVelocity = Mathf.Clamp(Mathf.Abs(jumpScript.velocity.y), 0, maxSpeed);
+        jumpVelocity = jumpScript.velocity.y;// Mathf.Clamp(jumpScript.velocity.y, 0, maxSpeed);
         myAnimator.SetFloat("jumpVelocity", jumpVelocity);
+
+        if (jumpVelocity != 0)
+        {
+            Debug.Log($"Jump Velocity: {jumpVelocity}");
+        }
 
         checkForLanding();
     }

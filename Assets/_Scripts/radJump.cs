@@ -171,7 +171,6 @@ public class radJump : MonoBehaviour
         //Else if going down...
         else if (body.velocity.y < -0.01f)
         {
-
             if (onGround)
             //Don't change it if Kit is stood on something (such as a moving platform)
             {
@@ -182,7 +181,6 @@ public class radJump : MonoBehaviour
                 //Otherwise, apply the downward gravity multiplier as Kit comes back to Earth
                 gravMultiplier = downwardMovementMultiplier;
             }
-
         }
         //Else not moving vertically at all
         else
@@ -202,7 +200,6 @@ public class radJump : MonoBehaviour
 
     private void DoAJump()
     {
-
         //Create the jump, provided we are on the ground, in coyote time, or have a double jump available
         if (onGround || (coyoteTimeCounter > 0.03f && coyoteTimeCounter < coyoteTime) || canJumpAgain)
         {

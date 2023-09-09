@@ -162,4 +162,9 @@ public class radJuice : MonoBehaviour
 
         squeezing = false;
     }
+
+    public void ShootEffects()
+    {
+        //TODO add shoot effects
+    }
 }

@@ -35,7 +35,7 @@ public class radShoot : MonoBehaviour
             shootTime = 0;
             animator.SetTrigger("Shoot");
             animator.SetBool("isShooting", true);
-            Invoke("StopShooting", 0.15f);
+            Invoke("StopShooting", 0.25f);
 
             var asi = animator.GetCurrentAnimatorStateInfo(0);
 

@@ -10,6 +10,9 @@ public class radShoot : MonoBehaviour
     private Animator animator;
     private bool pressingShoot = false;
     private bool canShoot = true;
+    private float canShootTime = 0f;
+    private float canShootTimeTotal = 0.15f;
+    private bool isShooting = false;
     private float shootTime = 0f;
     private float shootTimeTotal = 0.25f;
 
@@ -32,7 +35,8 @@ public class radShoot : MonoBehaviour
         if (pressingShoot && canShoot)
         {
             canShoot = false;
-            shootTime = 0;
+            isShooting = true;
+            canShootTimeTotal = 0f;
             animator.SetTrigger("Shoot");
             animator.SetBool("isShooting", true);
             Invoke("StopShooting", 0.25f);
@@ -63,21 +67,26 @@ public class radShoot : MonoBehaviour
             {
                 animator.Play("Player_DuckShoot");
             }
-            else
-            {
-                animator.Play("Player_Shoot");
-            }
 
             ShootBullet();
         }
 
         if (!canShoot && !pressingShoot)
         {
+            canShootTime += Time.deltaTime;
+
+            if (canShootTime >= canShootTimeTotal)
+            {
+                canShoot = true;
+            }
+        }
+
+        if (isShooting)
+        {
             shootTime += Time.deltaTime;
 
             if (shootTime >= shootTimeTotal)
             {
-                canShoot = true;
                 StopShooting();
             }
         }
@@ -97,41 +106,34 @@ public class radShoot : MonoBehaviour
     }
     private void StopShooting()
     {
-        if (!pressingShoot)
+        animator.SetBool("isShooting", false);
+        isShooting = false;
+
+        var asi = animator.GetCurrentAnimatorStateInfo(0);
+
+        if (asi.IsName("Player_Shoot"))
         {
-            animator.SetBool("isShooting", false);
-            canShoot = true;
-
-            var asi = animator.GetCurrentAnimatorStateInfo(0);
-
-            if (asi.IsName("Player_Shoot"))
-            {
-                animator.Play("Player_Idle");
-            }
-            else if (asi.IsName("Player_RunShoot"))
-            {
-                animator.Play("Player_Run", 0, asi.normalizedTime);
-            }
-            else if (asi.IsName("Player_JumpShoot_Ascend"))
-            {
-                animator.Play("Player_Jump_Ascend");
-            }
-            else if (asi.IsName("Player_JumpShoot_Apex"))
-            {
-                animator.Play("Player_Jump_Apex");
-            }
-            else if (asi.IsName("Player_JumpShoot_Fall"))
-            {
-                animator.Play("Player_Jump_Fall");
-            }
-            else if (asi.IsName("Player_DuckShoot"))
-            {
-                animator.Play("Player_Duck");
-            }
-            else
-            {
-                animator.Play("Player_Idle");
-            }
+            animator.Play("Player_Idle");
+        }
+        else if (asi.IsName("Player_RunShoot"))
+        {
+            animator.Play("Player_Run", 0, asi.normalizedTime);
+        }
+        else if (asi.IsName("Player_JumpShoot_Ascend"))
+        {
+            animator.Play("Player_Jump_Ascend");
+        }
+        else if (asi.IsName("Player_JumpShoot_Apex"))
+        {
+            animator.Play("Player_Jump_Apex");
+        }
+        else if (asi.IsName("Player_JumpShoot_Fall"))
+        {
+            animator.Play("Player_Jump_Fall");
+        }
+        else if (asi.IsName("Player_DuckShoot"))
+        {
+            animator.Play("Player_Duck");
         }
     }
 

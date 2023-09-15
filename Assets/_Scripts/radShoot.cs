@@ -139,6 +139,8 @@ public class radShoot : MonoBehaviour
 
     void ShootBullet()
     {
+        juice.ShootEffects(movement.transform.localScale.x);
+
         GameObject bullet = Instantiate(bulletPrefab, gunBarrelPos.position, Quaternion.identity);
         bullet.name = bulletPrefab.name;
         bullet.GetComponent<BulletScript>().SetDamageValue(bulletDamage);

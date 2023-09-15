@@ -9,6 +9,8 @@ public class radJuice : MonoBehaviour
     radJump jumpScript;
     [SerializeField] Animator myAnimator;
     [SerializeField] GameObject characterSprite;
+    [SerializeField] GameObject gunBlast;
+    [SerializeField] GameObject gunBarrel;
 
     [Header("Components - Particles")]
     [SerializeField] private ParticleSystem moveParticles;
@@ -163,8 +165,12 @@ public class radJuice : MonoBehaviour
         squeezing = false;
     }
 
-    public void ShootEffects()
+    public void ShootEffects(float directionX)
     {
-        //TODO add shoot effects
+        var xOffset = 0.734f;
+        var yOffset = -0.05f;
+        var instance = Instantiate<GameObject>(gunBlast, new Vector3(gunBarrel.transform.position.x + (directionX * xOffset), gunBarrel.transform.position.y - yOffset, gunBarrel.transform.position.z), gunBarrel.transform.rotation);
+        instance.transform.localScale = new Vector3(directionX, 1, 1);
+        instance.GetComponent<GunBlastScript>().Spawn("PoweredGunBlast");
     }
 }

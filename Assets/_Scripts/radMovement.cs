@@ -10,6 +10,7 @@ public class radMovement : MonoBehaviour
 
     private Rigidbody2D body;
     radGround ground;
+    Animator animator;
 
     [Header("Movement Stats")]
     [SerializeField, Range(0f, 20f)][Tooltip("Maximum movement speed")] public float maxSpeed = 10f;
@@ -32,6 +33,9 @@ public class radMovement : MonoBehaviour
     private float acceleration;
     private float deceleration;
     private float turnSpeed;
+    private bool isDucking;
+    private float duckCooldownTime = 0f;
+    private float duckCooldownTimeTotal = 0.15f;
 
     [Header("Current State")]
     public bool onGround;
@@ -42,11 +46,24 @@ public class radMovement : MonoBehaviour
         //Find the character's Rigidbody and ground detection script
         body = GetComponent<Rigidbody2D>();
         ground = GetComponent<radGround>();
+        animator = GetComponent<Animator>();
     }
 
     public void OnMovement(InputAction.CallbackContext context)
     {
-        directionX = context.ReadValue<float>();
+        if (!isDucking)
+        {
+            directionX = context.ReadValue<float>();
+        }
+        else
+        {
+            var dir = context.ReadValue<float>();
+
+            if (dir != 0)
+            {
+                transform.localScale = new Vector3(dir > 0 ? 1 : -1, 1, 1);
+            }
+        }
     }
 
     private void Update()
@@ -63,10 +80,27 @@ public class radMovement : MonoBehaviour
             pressingKey = false;
         }
 
+        if (duckCooldownTime < duckCooldownTimeTotal)
+        {
+            duckCooldownTime += Time.deltaTime;
+        }
+
+        if (onGround && Input.GetKey(KeyCode.S) && duckCooldownTime >= duckCooldownTimeTotal)
+        {
+            isDucking = true;
+            animator.SetBool("isDucking", true);            
+            directionX = 0f;  //stop any movement
+        }
+        else if (isDucking)
+        {
+            isDucking = false;
+            animator.SetBool("isDucking", false);
+            duckCooldownTime = 0f;
+        }
+
         //Calculate's the character's desired velocity - which is the direction you are facing, multiplied by the character's maximum speed
         //Friction is not used in this game
         desiredVelocity = new Vector2(directionX, 0f) * Mathf.Max(maxSpeed - friction, 0f);
-
     }
 
     private void FixedUpdate()
@@ -99,8 +133,7 @@ public class radMovement : MonoBehaviour
 
     private void runWithAcceleration()
     {
-        //Set our acceleration, deceleration, and turn speed stats, based on whether we're on the ground on in the air
-
+        //Set our acceleration, deceleration, and turn speed stats, based on whether we're on the ground on in the air=
         acceleration = onGround ? maxAcceleration : maxAirAcceleration;
         deceleration = onGround ? maxDecceleration : maxAirDeceleration;
         turnSpeed = onGround ? maxTurnSpeed : maxAirTurnSpeed;

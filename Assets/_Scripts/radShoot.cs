@@ -14,7 +14,7 @@ public class radShoot : MonoBehaviour
     private float canShootTimeTotal = 0.15f;
     private bool isShooting = false;
     private float shootTime = 0f;
-    private float shootTimeTotal = 0.25f;
+    private float shootTimeTotal = 0.5f;
 
     [SerializeField] int bulletDamage = 1;
     [SerializeField] float bulletSpeed = 25;
@@ -32,14 +32,13 @@ public class radShoot : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (pressingShoot && canShoot)
+        if (Input.GetKey(KeyCode.G) && canShoot)
         {
             canShoot = false;
             isShooting = true;
-            canShootTimeTotal = 0f;
-            animator.SetTrigger("Shoot");
-            animator.SetBool("isShooting", true);
-            Invoke("StopShooting", shootTimeTotal);
+            canShootTime = 0f;
+            shootTime = 0f;
+            //Invoke("StopShooting", shootTimeTotal);
 
             var asi = animator.GetCurrentAnimatorStateInfo(0);
 
@@ -71,7 +70,7 @@ public class radShoot : MonoBehaviour
             ShootBullet();
         }
 
-        if (!canShoot && !pressingShoot)
+        if (!canShoot)
         {
             canShootTime += Time.deltaTime;
 
@@ -94,19 +93,18 @@ public class radShoot : MonoBehaviour
 
     public void OnShoot(InputAction.CallbackContext context)
     {
-        if (context.started)
-        {
-            pressingShoot = true;
-        }
+        //if (context.started)
+        //{
+        //    pressingShoot = true;
+        //}
 
-        if (context.canceled)
-        {
-            pressingShoot = false;
-        }
+        //if (context.canceled)
+        //{
+        //    pressingShoot = false;
+        //}
     }
     private void StopShooting()
     {
-        animator.SetBool("isShooting", false);
         isShooting = false;
 
         var asi = animator.GetCurrentAnimatorStateInfo(0);

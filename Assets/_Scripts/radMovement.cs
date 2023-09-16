@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEditor.U2D.Animation;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using static UnityEditor.Timeline.TimelinePlaybackControls;
 
 public class radMovement : MonoBehaviour
 {
@@ -51,19 +52,19 @@ public class radMovement : MonoBehaviour
 
     public void OnMovement(InputAction.CallbackContext context)
     {
-        if (!isDucking)
-        {
-            directionX = context.ReadValue<float>();
-        }
-        else
-        {
-            var dir = context.ReadValue<float>();
+        //if (!isDucking)
+        //{
+        //    directionX = context.ReadValue<float>();
+        //}
+        //else
+        //{
+        //    var dir = context.ReadValue<float>();
 
-            if (dir != 0)
-            {
-                transform.localScale = new Vector3(dir > 0 ? 1 : -1, 1, 1);
-            }
-        }
+        //    if (dir != 0)
+        //    {
+        //        transform.localScale = new Vector3(dir > 0 ? 1 : -1, 1, 1);
+        //    }
+        //}
     }
 
     private void Update()
@@ -85,16 +86,56 @@ public class radMovement : MonoBehaviour
             duckCooldownTime += Time.deltaTime;
         }
 
+        if (Input.GetKey(KeyCode.D))
+        {
+            if (!isDucking)
+            {
+                directionX = 1f;
+            }
+            else
+            {
+                transform.localScale = new Vector3(1, 1, 1);
+            }
+        }
+        else if (Input.GetKey(KeyCode.A))
+        {
+            if (!isDucking)
+            {
+                directionX = -1f;
+            }
+            else
+            {
+                transform.localScale = new Vector3(-1, 1, 1);
+            }
+        }
+        else
+        {
+            directionX = 0f;
+        }
+
         if (onGround && Input.GetKey(KeyCode.S) && duckCooldownTime >= duckCooldownTimeTotal)
         {
             isDucking = true;
-            animator.SetBool("isDucking", true);            
+            var asi = animator.GetCurrentAnimatorStateInfo(0);
+
+            if (!asi.IsName("Player_Duck") && !asi.IsName("Player_DuckShoot"))
+            {
+                animator.Play("Player_Duck");
+            }
+
             directionX = 0f;  //stop any movement
         }
         else if (isDucking)
         {
             isDucking = false;
-            animator.SetBool("isDucking", false);
+
+            var asi = animator.GetCurrentAnimatorStateInfo(0);
+
+            if (asi.IsName("Player_Duck") || asi.IsName("Player_DuckShoot"))
+            {
+                animator.Play("Player_Idle");
+            }
+
             duckCooldownTime = 0f;
         }
 

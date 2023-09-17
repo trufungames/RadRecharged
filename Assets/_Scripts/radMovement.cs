@@ -12,6 +12,8 @@ public class radMovement : MonoBehaviour
     private Rigidbody2D body;
     radGround ground;
     Animator animator;
+    radShoot radShoot;
+    radJump radJump;
 
     [Header("Movement Stats")]
     [SerializeField, Range(0f, 20f)][Tooltip("Maximum movement speed")] public float maxSpeed = 10f;
@@ -48,6 +50,8 @@ public class radMovement : MonoBehaviour
         body = GetComponent<Rigidbody2D>();
         ground = GetComponent<radGround>();
         animator = GetComponent<Animator>();
+        radShoot = GetComponent<radShoot>();
+        radJump = GetComponent<radJump>();
     }
 
     public void OnMovement(InputAction.CallbackContext context)
@@ -69,6 +73,9 @@ public class radMovement : MonoBehaviour
 
     private void Update()
     {
+        //get current animation state
+        var asi = animator.GetCurrentAnimatorStateInfo(0);
+
         //Used to flip the character's sprite when she changes direction
         //Also tells us that we are currently pressing a direction button
         if (directionX != 0)
@@ -86,37 +93,37 @@ public class radMovement : MonoBehaviour
             duckCooldownTime += Time.deltaTime;
         }
 
-        if (Input.GetKey(KeyCode.D))
+        if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.A))
         {
+            var dirX = Input.GetKey(KeyCode.D) ? 1f : -1f;
+
             if (!isDucking)
             {
-                directionX = 1f;
+                directionX = dirX;
+
+                if (onGround && !asi.IsName("Player_RunShoot") && !radJump.currentlyJumping)
+                {
+                    animator.Play("Player_Run");
+                }
             }
             else
             {
-                transform.localScale = new Vector3(1, 1, 1);
-            }
-        }
-        else if (Input.GetKey(KeyCode.A))
-        {
-            if (!isDucking)
-            {
-                directionX = -1f;
-            }
-            else
-            {
-                transform.localScale = new Vector3(-1, 1, 1);
+                transform.localScale = new Vector3(dirX, 1, 1);
             }
         }
         else
         {
             directionX = 0f;
+
+            if (!radShoot.isShooting && !isDucking && onGround && !radJump.currentlyJumping)
+            {
+                animator.Play("Player_Idle");
+            }
         }
 
         if (onGround && Input.GetKey(KeyCode.S) && duckCooldownTime >= duckCooldownTimeTotal)
         {
             isDucking = true;
-            var asi = animator.GetCurrentAnimatorStateInfo(0);
 
             if (!asi.IsName("Player_Duck") && !asi.IsName("Player_DuckShoot"))
             {
@@ -128,8 +135,6 @@ public class radMovement : MonoBehaviour
         else if (isDucking)
         {
             isDucking = false;
-
-            var asi = animator.GetCurrentAnimatorStateInfo(0);
 
             if (asi.IsName("Player_Duck") || asi.IsName("Player_DuckShoot"))
             {

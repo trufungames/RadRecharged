@@ -10,11 +10,9 @@ public class radShoot : MonoBehaviour
     private Animator animator;
     private bool pressingShoot = false;
     private bool canShoot = true;
-    private float canShootTime = 0f;
-    private float canShootTimeTotal = 0.15f;
-    private bool isShooting = false;
+    public bool isShooting = false;
     private float shootTime = 0f;
-    private float shootTimeTotal = 0.5f;
+    private float shootTimeTotal = 0.3f;
 
     [SerializeField] int bulletDamage = 1;
     [SerializeField] float bulletSpeed = 25;
@@ -36,7 +34,6 @@ public class radShoot : MonoBehaviour
         {
             canShoot = false;
             isShooting = true;
-            canShootTime = 0f;
             shootTime = 0f;
             //Invoke("StopShooting", shootTimeTotal);
 
@@ -70,14 +67,9 @@ public class radShoot : MonoBehaviour
             ShootBullet();
         }
 
-        if (!canShoot)
+        if (!Input.GetKey(KeyCode.G))
         {
-            canShootTime += Time.deltaTime;
-
-            if (canShootTime >= canShootTimeTotal)
-            {
-                canShoot = true;
-            }
+            canShoot = true;
         }
 
         if (isShooting)
@@ -137,13 +129,13 @@ public class radShoot : MonoBehaviour
 
     void ShootBullet()
     {
-        juice.ShootEffects(movement.transform.localScale.x);
-
         GameObject bullet = Instantiate(bulletPrefab, gunBarrelPos.position, Quaternion.identity);
         bullet.name = bulletPrefab.name;
         bullet.GetComponent<BulletScript>().SetDamageValue(bulletDamage);
         bullet.GetComponent<BulletScript>().SetBulletSpeed(bulletSpeed);
         bullet.GetComponent<BulletScript>().SetBulletDirection(new Vector2(movement.transform.localScale.x, 0));
         bullet.GetComponent<BulletScript>().Shoot();
+
+        juice.ShootEffects(movement.transform.localScale.x);
     }
 }

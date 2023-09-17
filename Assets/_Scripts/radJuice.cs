@@ -167,7 +167,7 @@ public class radJuice : MonoBehaviour
 
     public void ShootEffects(float directionX)
     {
-        var xOffset = 0.734f;
+        var xOffset = 0.0f; //0.734f;
         var yOffset = -0.05f;
         var instance = Instantiate<GameObject>(gunBlast, new Vector3(gunBarrel.transform.position.x + (directionX * xOffset), gunBarrel.transform.position.y - yOffset, gunBarrel.transform.position.z), gunBarrel.transform.rotation);
         instance.transform.localScale = new Vector3(directionX, 1, 1);

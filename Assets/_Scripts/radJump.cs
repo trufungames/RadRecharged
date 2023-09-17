@@ -39,7 +39,7 @@ public class radJump : MonoBehaviour
     private float coyoteTimeCounter = 0;
     private bool pressingJump;
     public bool onGround;
-    private bool currentlyJumping;
+    public bool currentlyJumping;
 
     void Awake()
     {
